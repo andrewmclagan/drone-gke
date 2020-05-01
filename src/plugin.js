@@ -1,6 +1,7 @@
 const fs = require("fs");
 const shell = require("shelljs");
 const Base64 = require("js-base64").Base64;
+const glob = require("glob");
 
 /**
  * Decodes a base64 encoded service key
@@ -16,10 +17,13 @@ function decodeServiceKey(key) {
  * Execute a command
  *
  * @param string cmd
+ * @param bool echo
  * @return void
  */
-function execute(cmd) {
-  shell.echo(cmd);
+function execute(cmd, echo = true) {
+  if (echo) {
+    shell.echo(cmd);
+  }
   if (shell.exec(cmd).code !== 0) {
     shell.exit(1);
   }
@@ -62,6 +66,25 @@ function setCluster(cluster, zone) {
   execute(`
     gcloud container clusters get-credentials ${cluster} --zone ${zone}
   `);
+}
+
+/**
+ * return array of yaml file paths
+ *
+ * @param string paths
+ * @return Bool
+ */
+function getArtefacts(paths = "") {
+  let artefacts = [];
+
+  if (paths.includes(",")) {
+    artefacts = paths.split(",");
+  } else if (paths === "*") {
+    glob(__dirname + "/**/*.yml", {}, (err, files) => artefacts.join(files));
+    glob(__dirname + "/**/*.yaml", {}, (err, files) => artefacts.join(files));
+  }
+
+  return artefacts;
 }
 
 /**
@@ -111,24 +134,23 @@ function writeFile(pathToFile, fileString) {
  * @return void
  */
 function clone(options) {
-  execute(`
-    touch ~/.ssh/id_rsa_gitops && chmod 600 ~/.ssh/id_rsa_gitops
-  `);
+  const privateKey = Base64.decode(options.privateKey);
 
-  execute(`
-    touch ~/.ssh/id_rsa_gitops.pub && chmod 644 ~/.ssh/id_rsa_gitops.pub
-  `);
+  fs.writeFileSync('/tmp/id_rsa', privateKey, { mode: 0o600 });
 
-  execute(`
-    echo ${options.privateKey} >> ~/.ssh/id_rsa_gitops && echo ${options.publicKey} >> ~/.ssh/id_rsa_gitops.pub
-  `);
+  const publicKey = Base64.decode(options.publicKey);
 
-  execute(`
+  fs.writeFileSync('/tmp/id_rsa.pub', publicKey, { mode: 0o644 });  
+
+  execute(
+    `
     mkdir -p ${options.path}
-  `);
+  `,
+    false
+  );
 
   execute(`
-    git clone -c core.sshCommand="ssh -i ~/.ssh/id_rsa_gitops" --single-branch --branch ${options.branch} ${options.repo} ${options.path} --depth=3
+    git clone -c core.sshCommand="ssh -i /tmp/id_rsa" --single-branch --branch ${options.branch} ${options.repo} ${options.path} --depth=3
   `);
 }
 
@@ -138,6 +160,7 @@ module.exports = {
   writeFile: writeFile,
   authorizeServiceAccount: authorizeServiceAccount,
   setCluster: setCluster,
+  getArtefacts: getArtefacts,
   echoArtefact: echoArtefact,
   applyArtefact: applyArtefact,
   clone: clone,
