@@ -3,12 +3,12 @@ name: default
 steps:
 
   - name: dependancies
-    image: node:alpine
+    image: node:13
     commands:
       - yarn install
 
   - name: test
-    image: node:alpine
+    image: node:13
     commands:
       - yarn run test
 
