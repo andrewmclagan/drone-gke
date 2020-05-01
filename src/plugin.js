@@ -1,7 +1,6 @@
 const fs = require("fs");
 const shell = require("shelljs");
 const Base64 = require("js-base64").Base64;
-const NodeGit = require("nodegit");
 
 /**
  * Decodes a base64 encoded service key
@@ -112,38 +111,25 @@ function writeFile(pathToFile, fileString) {
  * @return void
  */
 function clone(options) {
-  NodeGit.Clone(options.repo, options.path, {
-    fetchOpts: {
-      callbacks: {
-        certificateCheck: () => 0,
-        credentials: (url, userName) => {
-          try {
-            return NodeGit.Cred.sshKeyNew(
-              userName,
-              options.publicKey,
-              options.privateKey,
-              options.passphrase
-            );
-          } catch (error) {
-            console.log(error);
-          }
-        },
-      },
-    },
-  })
-    .then((repo) => {
-      return repo
-        .getHeadCommit()
-        .then((targetCommit) =>
-          repo.createBranch(options.branch, targetCommit, false)
-        )
-        .then((reference) => repo.checkoutBranch(reference, {}))
-        .then(() =>
-          repo.getReferenceCommit("refs/remotes/origin/" + options.branch)
-        )
-        .then((commit) => NodeGit.Reset.reset(repo, commit, 3, {}));
-    })
-    .catch((error) => console.log("error >>", error));
+  execute(`
+    touch ~/.ssh/id_rsa_gitops && chmod 600 ~/.ssh/id_rsa_gitops
+  `);
+
+  execute(`
+    touch ~/.ssh/id_rsa_gitops.pub && chmod 644 ~/.ssh/id_rsa_gitops.pub
+  `);
+
+  execute(`
+    echo ${options.privateKey} >> ~/.ssh/id_rsa_gitops && echo ${options.publicKey} >> ~/.ssh/id_rsa_gitops.pub
+  `);
+
+  execute(`
+    mkdir -p ${options.path}
+  `);
+
+  execute(`
+    git clone -c core.sshCommand="ssh -i ~/.ssh/id_rsa_gitops" --single-branch --branch ${options.branch} ${options.repo} ${options.path} --depth=3
+  `);
 }
 
 module.exports = {
@@ -154,5 +140,5 @@ module.exports = {
   setCluster: setCluster,
   echoArtefact: echoArtefact,
   applyArtefact: applyArtefact,
-  clone: clone
+  clone: clone,
 };

@@ -38,13 +38,11 @@ RUN apk --no-cache add \
 
 #
 #--------------------------------------------------------------------------
-# nodegit deps
+# git deps
 #--------------------------------------------------------------------------
 #
 
-RUN apk --no-cache add curl-dev g++ make python \
-    && BUILD_ONLY=true YARN_CACHE_FOLDER=/dev/shm/yarn_cache yarn --production \
-    && apk del g++ make python    
+RUN apk --no-cache git
 
 #
 #--------------------------------------------------------------------------

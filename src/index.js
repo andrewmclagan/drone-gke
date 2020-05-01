@@ -46,8 +46,7 @@ if (process.env.PLUGIN_REPO) {
     path: REPO_PATH,
     publicKey: process.env.PLUGIN_PUBLIC_KEY,
     privateKey: process.env.PLUGIN_PRIVATE_KEY,
-    passphrase: process.env.PLUGIN_PASSPHRASE,
-    branch: process.env.DRONE_BRANCH,
+    branch: process.env.DRONE_BRANCH
   });
 }
 
