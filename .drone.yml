@@ -1,0 +1,34 @@
+kind: pipeline
+name: default
+steps:
+  - name: gateway
+    image: plugins/gcr
+    settings:
+      repo: beamaustralia/legacy-gateway
+      context: gateway
+      dockerfile: gateway/Dockerfile
+      tags: ["latest", "${DRONE_TAG=${DRONE_COMMIT}}"]
+      json_key:
+        from_secret: GCE_KEY
+
+  - name: dependancies
+    image: node:alpine
+    commands:
+      - yarn install
+
+  - name: test
+    image: node:alpine
+    commands:
+      - yarn run test
+
+  - name: cms-image
+    image: plugins/docker
+    settings:
+      repo: andrewmclagan/drone-gke
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password      
+      tags: 
+        - "latest"
+        - "${DRONE_TAG=${DRONE_COMMIT}}"

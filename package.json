@@ -1,0 +1,19 @@
+{
+  "name": "drone-gke",
+  "version": "0.2.0",
+  "description": "Deply kubernetes artefacts with Drone CI",
+  "main": "index.js",
+  "repository": "https://bitbucket.org/ethical-jobs/drone-gke.git",
+  "author": "andrewmclagan <andrewmclagan@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "dot": "^1.1.1",
+    "jest": "^18.1.0",
+    "js-base64": "^2.1.9",
+    "nodegit": "^0.26.5",
+    "shelljs": "^0.7.6"
+  }
+}
