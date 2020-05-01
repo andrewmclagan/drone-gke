@@ -1,15 +1,6 @@
 kind: pipeline
 name: default
 steps:
-  - name: gateway
-    image: plugins/gcr
-    settings:
-      repo: beamaustralia/legacy-gateway
-      context: gateway
-      dockerfile: gateway/Dockerfile
-      tags: ["latest", "${DRONE_TAG=${DRONE_COMMIT}}"]
-      json_key:
-        from_secret: GCE_KEY
 
   - name: dependancies
     image: node:alpine

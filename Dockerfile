@@ -1,8 +1,8 @@
-FROM node:9-alpine
+FROM node:13-alpine
 
 MAINTAINER "Andrew McLagan" <andrew@ethicaljobs.com.au>
 
-ARG CLOUD_SDK_VERSION=229.0.0
+ARG CLOUD_SDK_VERSION=290.0.0
 
 ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
 
