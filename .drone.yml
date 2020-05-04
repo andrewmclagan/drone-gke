@@ -1,23 +1,26 @@
 kind: pipeline
 type: docker
 name: default
-
-environment:
-  HELLO: "world"
-  FOO: "bar"
-  DOCKER_PASSWORD:
-    from_secret: DOCKER_PASSWORD
-
 steps:
-  - name: "echo"
-    image: alpine
+
+  - name: dependancies
+    image: node:alpine
     commands:
-      - echo ${DOCKER_PASSWORD}
-      - echo $${DOCKER_PASSWORD}
-      - echo $DOCKER_PASSWORD
-      - echo $$DOCKER_PASSWORD
-      - echo ${FOO}
-      - echo $${FOO}
-      - echo $FOO
-      - echo $$FOO
-      - env
+      - yarn install
+
+  - name: test
+    image: node:alpine
+    commands:
+      - yarn run test
+
+  - name: cms-image
+    image: plugins/docker
+    settings:
+      repo: andrewmclagan/drone-gke
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password      
+      tags: 
+        - "latest"
+        - "${DRONE_TAG=${DRONE_COMMIT}}"
