@@ -5,15 +5,17 @@ name: default
 environment:
   HELLO: "world"
   FOO: "bar"
+  DOCKER_PASSWORD:
+    from_secret: DOCKER_PASSWORD
 
 steps:
   - name: "echo"
     image: alpine
     commands:
-      - echo ${HELLO}
-      - echo $${HELLO}
-      - echo $HELLO
-      - echo $$HELLO
+      - echo ${DOCKER_PASSWORD}
+      - echo $${DOCKER_PASSWORD}
+      - echo $DOCKER_PASSWORD
+      - echo $$DOCKER_PASSWORD
       - echo ${FOO}
       - echo $${FOO}
       - echo $FOO
