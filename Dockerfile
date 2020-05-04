@@ -64,6 +64,6 @@ ADD . /var/drone-gce-plugin
 
 WORKDIR /var/drone-gce-plugin
 
-RUN yarn
+RUN yarn install
 
-CMD node /var/drone-gce-plugin/src/index.js
+CMD yarn run start
