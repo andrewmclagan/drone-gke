@@ -21,11 +21,11 @@ spec:
       containers:
       - name: test-container-1
         imagePullPolicy: Always
-        image: docker/repo:{{=template.drone.tag}}
+        image: docker/repo:{{=template.DRONE_TAG}}
         ports:
             - containerPort: 80
       - name: test-container-2
         imagePullPolicy: Always
-        image: docker/repo:{{=template.environment.FOO || template.environment.BAR}}
+        image: docker/repo:{{=template.FOO || template.BAR}}
         ports:
             - containerPort: 80

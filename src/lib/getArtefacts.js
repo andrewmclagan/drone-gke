@@ -5,7 +5,7 @@ export default function getArtefacts(paths = "") {
 
   if (paths.includes(",")) {
     artefacts = paths.split(",");
-  } else if (paths === "*") {
+  } else {
     glob(__dirname + "/**/*.yml", {}, (err, files) => artefacts.join(files));
     glob(__dirname + "/**/*.yaml", {}, (err, files) => artefacts.join(files));
   }

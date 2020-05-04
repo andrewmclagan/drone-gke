@@ -1,12 +1,12 @@
 import path from "path";
 import * as plugin from "./lib";
+import { getEnv } from "./utils";
 
-const serviceKeyString =
-  process.env.GKE_KEY || process.env.PLUGIN_GKE_KEY || null;
+const serviceKeyString = getEnv('GKE_JSON_KEY')
 
 if (!serviceKeyString) {
   console.log(
-    "Invalid key file, please provide a base64 encoded key file in the GKE_KEY environment variable or drone secret."
+    "Invalid key file, please provide a base64 encoded key file in the GKE_JSON_KEY environment variable or drone secret."
   );
   process.exit(1);
 }
@@ -15,11 +15,9 @@ plugin.versions();
 
 const serviceKey = plugin.decodeServiceKey(serviceKeyString);
 
-const params = plugin.getTemplateParams(process.env);
+const templateParams = plugin.getTemplateParams(process.env);
 
-const artefacts = plugin.getArtefacts(process.env.PLUGIN_ARTEFACTS);
-
-const namespace = process.env.PLUGIN_NAMESPACE || "";
+const artefactPaths = plugin.getArtefacts(getEnv('ARTEFACTS'));
 
 // Authorise and set cluster
 
@@ -31,30 +29,30 @@ plugin.authorizeServiceAccount(
   serviceKey.project_id
 );
 
-plugin.setCluster(params.plugin.cluster, params.plugin.zone);
+plugin.setCluster(getEnv('CLUSTER'), getEnv('ZONE'));
 
 // clone configuration repo
 
 let REPO_PATH = "";
 
-if (process.env.PLUGIN_REPO) {
+if (getEnv('CONFIG_REPO')) {
   REPO_PATH = "/__gitops-config-repo";
 
   plugin.cloneRepo({
-    repo: process.env.PLUGIN_REPO,
+    repo: getEnv('CONFIG_REPO'),
     path: REPO_PATH,
-    publicKey: process.env.PLUGIN_PUBLIC_KEY,
-    privateKey: process.env.PLUGIN_PRIVATE_KEY,
-    branch: process.env.DRONE_BRANCH
+    publicKey: getEnv('REPO_PUBLIC_KEY'),
+    privateKey: getEnv('REPO_PRIVATE_KEY'),
+    branch: getEnv('BRANCH')
   });
 }
 
 // Process and apply artefacts
 
-artefacts.forEach(function (artefact) {
+artefactPaths.forEach(function (artefact) {
   const templatePath = path.join(REPO_PATH, path.resolve(artefact));
-  const templateString = template.praseTemplate(templatePath, params);
+  const templateString = template.praseTemplate(templatePath, templateParams);
   plugin.writeFile(artefact, templateString);
   plugin.echoArtefact(artefact);
-  plugin.applyArtefact(artefact, namespace);
+  plugin.applyArtefact(artefact, getEnv('NAMESPACE'));
 });
