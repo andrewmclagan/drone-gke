@@ -33,7 +33,7 @@ RUN apk --no-cache add \
     gcloud config set component_manager/disable_update_check true && \
     gcloud config set metrics/environment github_docker_image && \
     gcloud config unset container/use_client_certificate && \
-    # Basic check it works.
+    # Smoke test, its installed.
     gcloud --version
 
 #
@@ -66,4 +66,6 @@ WORKDIR /var/drone-gce-plugin
 
 RUN yarn install
 
-CMD yarn run start
+RUN ls -la
+
+CMD ["yarn", "run", "start"]
