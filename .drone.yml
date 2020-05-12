@@ -7,6 +7,10 @@ steps:
     image: hayd/deno:alpine-1.0.0-rc2
     commands:
       - apk --no-cache add make git
+      - echo $DRONE_NETRC_USERNAME
+      - echo ${DRONE_NETRC_USERNAME}
+      - echo $DRONE_NETRC_PASSOWRD
+      - echo ${DRONE_NETRC_PASSOWRD}
       - make test
 
   - name: cms-image
