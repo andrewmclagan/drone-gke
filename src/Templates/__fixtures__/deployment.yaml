@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <%= name %>
+spec:
+  selector:
+    matchLabels:
+      foo: <%= labels.foo %>
+      bar: <%= labels.bar %>
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        foo: <%= labels.foo %>
+        bar: <%= labels.bar %>
+    spec:
+      containers:
+
+        - name: web
+          imagePullPolicy: Always
+          image: "hello-world:<%= version %>"
+          ports:
+            - containerPort: 80           

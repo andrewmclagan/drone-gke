@@ -16,7 +16,9 @@ steps:
   - name: cms-image
     image: plugins/docker
     settings:
-      repo: andrewmclagan/drone-gke
+      config_repo:
+        remote: master
+        branch: master
       username:
         from_secret: docker_username
       password:
