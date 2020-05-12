@@ -6,7 +6,7 @@ steps:
   - name: test
     image: hayd/deno:alpine-1.0.0-rc2
     commands:
-      - apk --no-cache make
+      - apk --no-cache add make
       - make test
 
   - name: cms-image
