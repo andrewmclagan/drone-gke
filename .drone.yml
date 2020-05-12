@@ -7,9 +7,9 @@ steps:
     image: hayd/deno:alpine-1.0.0-rc2
     commands:
       - apk --no-cache add make git
-      - cat ~/.netrc
-      - cat $HOME/.netrc
-      - cat/.netrc
+      - ls  ~/.netrc
+      - ls  $HOME/.netrc
+      - ls /.netrc
       - make test
 
   - name: cms-image
