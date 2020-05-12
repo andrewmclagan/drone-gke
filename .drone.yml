@@ -7,9 +7,7 @@ steps:
     image: hayd/deno:alpine-1.0.0-rc2
     commands:
       - apk --no-cache add make git
-      - ls -la $HOME/.ssh
-      - env
-      - echo $NETRC
+      - ls -la /root/.ssh/id_rsa
       - make test
 
   - name: cms-image
