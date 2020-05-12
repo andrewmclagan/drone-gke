@@ -3,11 +3,11 @@ type: docker
 name: default
 steps:
 
-  - name: test
-    image: hayd/deno:alpine-1.0.0-rc2
-    commands:
-      - apk --no-cache add make git
-      - make test
+  # - name: test
+  #   image: hayd/deno:alpine-1.0.0-rc2
+  #   commands:
+  #     - apk --no-cache add make git
+  #     - make test
 
   - name: cms-image
     image: plugins/docker
