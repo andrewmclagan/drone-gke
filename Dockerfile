@@ -1,6 +1,4 @@
-FROM node:13-alpine
-
-MAINTAINER "Andrew McLagan" <andrew@ethicaljobs.com.au>
+FROM hayd/deno:alpine-1.0.0-rc2
 
 ARG CLOUD_SDK_VERSION=290.0.0
 
@@ -12,16 +10,16 @@ ENV CLOUDSDK_CONTAINER_USE_CLIENT_CERTIFICATE False
 
 #
 #--------------------------------------------------------------------------
-# Install gcloud sdk
+# Install deps
 #--------------------------------------------------------------------------
 #
 
 RUN apk --no-cache add \
+        make \
         curl \
         python \
         py-crcmod \
         bash \
-        libc6-compat \
         openssh-client \
         git \
         gnupg \
@@ -38,14 +36,6 @@ RUN apk --no-cache add \
 
 #
 #--------------------------------------------------------------------------
-# git deps
-#--------------------------------------------------------------------------
-#
-
-RUN apk --no-cache add git
-
-#
-#--------------------------------------------------------------------------
 # Install kubectl
 #--------------------------------------------------------------------------
 #
@@ -58,14 +48,15 @@ RUN gcloud components update kubectl
 #--------------------------------------------------------------------------
 #
 
-RUN mkdir -p /var/drone-gce-plugin
+RUN mkdir -p /var/drone-gke-plugin
 
-ADD . /var/drone-gce-plugin
+ADD . /var/drone-gke-plugin
 
-WORKDIR /var/drone-gce-plugin
+WORKDIR /var/drone-gke-plugin
 
-RUN yarn install
+# add deps to cache
+RUN make bundle
 
-RUN ls -la
+ENTRYPOINT ["make"]
 
-CMD ["yarn", "run", "start"]
+CMD ["run"]

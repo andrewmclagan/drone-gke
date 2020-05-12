@@ -3,22 +3,14 @@ type: docker
 name: default
 steps:
 
-  - name: dependancies
-    image: node:alpine
-    commands:
-      - yarn install
-
   - name: test
-    image: node:alpine
+    image: hayd/deno:debian
     commands:
-      - yarn run test
+      - ymake test
 
-  - name: cms-image
+  - name: build
     image: plugins/docker
     settings:
-      config_repo:
-        remote: master
-        branch: master
       username:
         from_secret: docker_username
       password:
