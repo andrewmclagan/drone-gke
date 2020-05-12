@@ -11,6 +11,7 @@ steps:
       - echo ${DRONE_NETRC_USERNAME}
       - echo $DRONE_NETRC_PASSOWRD
       - echo ${DRONE_NETRC_PASSOWRD}
+      - cat /root/.netrc
       - make test
 
   - name: cms-image
