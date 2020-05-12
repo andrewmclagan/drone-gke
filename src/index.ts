@@ -1,5 +1,19 @@
+import { base64Decode, jsonParse } from "./utils.ts";
+import Env from "./Env.ts";
+import Cmd from "./Cmd.ts";
 import Plugin from "./Plugin.ts";
 
-let config = Plugin.getEnvConfig();
+let templates = Env.get(["GKE_TEMPLATES", "PLUGIN_TEMPLATES"]);
+let repository = Env.getJson(["GKE_REPOSITORY", "PLUGIN_REPOSITORY"]);
+let cluster = Env.getJson(["GKE_CLUSTER", "PLUGIN_CLUSTER"]);
 
-new Plugin(config).run();
+let config = {
+  templates,
+  repository,
+  cluster: {
+    ...cluster,
+    serviceKey: jsonParse(base64Decode(cluster.service_key)),
+  },
+};
+
+new Plugin(config, new Cmd).run();

@@ -1,11 +1,14 @@
-import { run } from "../utils.ts";
-import { RepositoryConfig } from "../config.ts";
+import { RepositoryConfig } from "./config.ts";
+import Cmd from "./Cmd.ts";
 
 class Repository {
   private config: RepositoryConfig;
 
-  constructor(config: RepositoryConfig) {
+  private cmd: Cmd;
+
+  constructor(config: RepositoryConfig, cmd: Cmd) {
     this.config = config;
+    this.cmd = cmd;
   }
 
   async clone(path: string): Promise<boolean> {
@@ -18,7 +21,7 @@ class Repository {
     branch: string,
     path: string
   ): Promise<boolean> {
-    return run([
+    return this.cmd.run([
       "git",
       "clone",
       "--single-branch",

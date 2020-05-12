@@ -1,44 +1,31 @@
 const { env } = Deno;
 import { Config } from "./config.ts";
-import { base64Decode, jsonParse } from "./utils.ts";
-import Env from "./Env.ts";
+import Cmd from "./Cmd.ts";
 import Templates from "./Templates/Templates.ts";
 import Cluster from "./Cluster.ts";
 
 class Plugin {
   protected config: Config;
 
-  constructor(config: Config) {
+  protected cmd: Cmd;
+
+  constructor(config: Config, cmd: Cmd) {
     this.config = config;
+    this.cmd = cmd;
   }
 
   async run(): Promise<void> {
-    const templates = new Templates(
-      this.config.templates,
-      this.config.repository
-    );
+    const { templates: glob, repository: repoConfig, cluster: clusterConfig } = this.config;
 
-    const cluster = new Cluster(this.config.cluster);
+    const templates = new Templates(glob, this.cmd, repoConfig);
+
+    const cluster = new Cluster(clusterConfig, this.cmd);
 
     const params: any = env.toObject();
     const templatePaths: Array<string> = await templates.parse(params);
 
     await cluster.authorize();
     await cluster.apply(templatePaths);
-  }
-
-  static getEnvConfig(): Config {
-    let templates = Env.get(["GKE_TEMPLATES", "PLUGIN_TEMPLATES"]);
-    let repository = Env.getJson(["GKE_REPOSITORY","PLUGIN_REPOSITORY"]);
-    let cluster = Env.getJson(["GKE_CLUSTER","PLUGIN_CLUSTER"]);
-    return {
-      templates,
-      repository,
-      cluster: {
-        ...cluster,
-        serviceKey: jsonParse(base64Decode(cluster.service_key)),
-      },
-    };
   }
 }
 

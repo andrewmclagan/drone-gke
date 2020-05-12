@@ -1,21 +1,24 @@
 const { makeTempDir } = Deno;
 import Resolver from "./Resolver.ts";
 import Parser from "./Parser.ts";
-import Repository from "./Repository.ts";
+import Repository from "../Repository.ts";
+import Cmd from "../Cmd.ts";
 import { RepositoryConfig } from "../config.ts";
 
 class Templates {
   glob: string;
 
+  cmd: Cmd;
+
   repository?: Repository;
 
   repositoryConfig?: RepositoryConfig;
 
-  constructor(glob: string = "**/*.{yml,yaml}", config?: RepositoryConfig) {
+  constructor(glob: string = "**/*.{yml,yaml}", cmd: Cmd, config?: RepositoryConfig) {
     this.glob = glob;
-
+    this.cmd = cmd;
     if (config) {
-      this.repository = new Repository(config);
+      this.repository = new Repository(config, cmd);
     }
   }
 

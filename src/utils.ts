@@ -18,13 +18,6 @@ export function jsonStringify(value: any): string {
   try {
     return JSON.stringify(value);
   } catch (error) {
-    return '';
+    return "";
   }
-}
-
-export async function run(cmd: Array<string>): Promise<boolean> {
-  const process = Deno.run({ cmd: cmd });
-  const status = await process.status();
-  process.close();
-  return status.success;
 }

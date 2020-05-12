@@ -1,13 +1,17 @@
 const { makeTempDir } = Deno;
 import { writeFileStr } from "https://deno.land/std/fs/mod.ts";
 import { ClusterConfig } from "./config.ts";
-import { run, jsonStringify } from "./utils.ts";
+import { jsonStringify } from "./utils.ts";
+import Cmd from "./Cmd.ts";
 
 class Cluster {
   protected config: ClusterConfig;
 
-  constructor(config: ClusterConfig) {
+  protected cmd: Cmd;
+
+  constructor(config: ClusterConfig, cmd: Cmd) {
     this.config = config;
+    this.cmd = cmd;
   }
 
   async authorize(): Promise<void> {
@@ -20,13 +24,13 @@ class Cluster {
 
   async apply(templates: Array<string>): Promise<void> {
     for (let i = 0; i < templates.length; i++) {
-      await run(["kubectl", "apply", `-f ${templates[i]}`, "--record"]);
+      await this.cmd.run(["kubectl", "apply", `-f ${templates[i]}`, "--record"]);
     }
   }
 
   private async setAuthentication(key: any): Promise<boolean> {
     const keyPath = await this.writeServiceKey(key);
-    return await run([
+    return await this.cmd.run([
       "gcloud",
       "auth",
       "activate-service-account",
@@ -37,7 +41,7 @@ class Cluster {
   }
 
   private async setCluster(): Promise<boolean> {
-    return await run([
+    return await this.cmd.run([
       "gcloud",
       "container",
       "clusters",
@@ -48,7 +52,7 @@ class Cluster {
   }
 
   private async setNamespace(namespace: string): Promise<boolean> {
-    return await run([
+    return await this.cmd.run([
       "kubectl",
       "config",
       "set-context",
