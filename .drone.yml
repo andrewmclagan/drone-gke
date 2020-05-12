@@ -4,13 +4,17 @@ name: default
 steps:
 
   - name: test
-    image: hayd/ubuntu-deno
+    image: hayd/deno:alpine-1.0.0-rc2
     commands:
+      - apk --no-cache make
       - make test
 
-  - name: build
+  - name: cms-image
     image: plugins/docker
     settings:
+      config_repo:
+        remote: master
+        branch: master
       username:
         from_secret: docker_username
       password:
