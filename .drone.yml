@@ -6,7 +6,7 @@ steps:
   - name: test
     image: hayd/deno:debian
     commands:
-      - ymake test
+      - make test
 
   - name: build
     image: plugins/docker
