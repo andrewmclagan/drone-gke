@@ -12,9 +12,11 @@ steps:
   - name: cms-image
     image: plugins/docker
     settings:
+      repo: andrewmclagan/drone-gke
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password      
       tags: 
+        - "latest"
         - "${DRONE_TAG=${DRONE_COMMIT}}"
