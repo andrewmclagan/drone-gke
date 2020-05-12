@@ -4,7 +4,7 @@ name: default
 steps:
 
   - name: test
-    image: hayd/deno:debian
+    image: hayd/deno:ubuntu
     commands:
       - make test
 
