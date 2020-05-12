@@ -5,9 +5,11 @@ steps:
 
   - name: test
     image: hayd/deno:alpine-1.0.0-rc2
+    privileged: true
     commands:
       - apk --no-cache add make git
-      - find / -name ".netrc"
+      - env
+      - ls -la /root
       - make test
 
   - name: cms-image
