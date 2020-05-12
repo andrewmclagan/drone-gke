@@ -13,8 +13,10 @@ class Plugin {
   }
 
   async run(): Promise<void> {
-    const glob: string = this.config.templates || "**/*.{yml,yaml}";
-    const templates = new Templates(glob, this.config.repository);
+    const templates = new Templates(
+      this.config.templates,
+      this.config.repository
+    );
 
     const cluster = new Cluster(this.config.cluster);
 
@@ -26,18 +28,14 @@ class Plugin {
   }
 
   static getEnvConfig(): Config {
-    let cluster = Env.getJson("CLUSTER");
-    let repository = Env.getJson("REPOSITORY");
+    let templates = Env.get(["GKE_TEMPLATES", "PLUGIN_TEMPLATES"]);
+    let repository = Env.getJson(["GKE_REPOSITORY","PLUGIN_REPOSITORY"]);
+    let cluster = Env.getJson(["GKE_CLUSTER","PLUGIN_CLUSTER"]);
     return {
-      templates: Env.get("TEMPLATES"),
-      repository: {
-        remote: repository.remote,
-        branch: repository.branch || "master",
-      },
+      templates,
+      repository,
       cluster: {
-        name: cluster.name,
-        zone: cluster.zone,
-        namespace: cluster.namespace || "",
+        ...cluster,
         serviceKey: jsonParse(base64Decode(cluster.service_key)),
       },
     };

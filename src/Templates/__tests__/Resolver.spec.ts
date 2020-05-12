@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
-import Resolver from "./Resolver.ts";
+import Resolver from "../Resolver.ts";
 
 const root: string = "src/Templates/__fixtures__";
 

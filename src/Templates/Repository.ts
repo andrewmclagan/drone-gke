@@ -1,4 +1,4 @@
-const { run } = Deno;
+import { run } from "../utils.ts";
 import { RepositoryConfig } from "../config.ts";
 
 class Repository {
@@ -18,20 +18,15 @@ class Repository {
     branch: string,
     path: string
   ): Promise<boolean> {
-    const process = run({
-      cmd: [
-        "git",
-        "clone",
-        "--single-branch",
-        `--branch=${branch}`,
-        "--depth=1",
-        remote,
-        path,
-      ],
-    });
-    const status = await process.status();
-    process.close();
-    return status.success;
+    return run([
+      "git",
+      "clone",
+      "--single-branch",
+      `--branch=${branch}`,
+      "--depth=1",
+      remote,
+      path,
+    ]);
   }
 }
 

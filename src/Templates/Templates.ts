@@ -11,7 +11,7 @@ class Templates {
 
   repositoryConfig?: RepositoryConfig;
 
-  constructor(glob: string, config?: RepositoryConfig) {
+  constructor(glob: string = "**/*.{yml,yaml}", config?: RepositoryConfig) {
     this.glob = glob;
 
     if (config) {

@@ -1,15 +1,17 @@
 const { remove } = Deno;
 import { assert } from "https://deno.land/std/testing/asserts.ts";
 import { readFileStr } from "https://deno.land/std/fs/mod.ts";
-import Parser from "./Parser.ts";
+import Parser from "../Parser.ts";
 
 const fixtures: Array<string> = [
   "./src/Templates/__fixtures__/service.yml",
   "./src/Templates/__fixtures__/deployment.yaml",
 ];
 
+const root: string = "/tmp/drone-gke";
+
 Deno.test("it can parse templates", async function (): Promise<void> {
-  let parser = new Parser(fixtures);
+  let parser = new Parser(fixtures, root);
 
   const paths = await parser.parse({
     name: "example-service",
@@ -32,13 +34,13 @@ Deno.test("it can parse templates", async function (): Promise<void> {
   assert(content.includes(`image: "hello-world:1.1.1"`));
 
   await remove(paths[0]);
-  await remove(paths[1]);  
+  await remove(paths[1]);
 });
 
 Deno.test("it does not modify original templates", async function (): Promise<
   void
 > {
-  let parser = new Parser(fixtures);
+  let parser = new Parser(fixtures, root);
 
   const paths = await parser.parse({
     name: "example-service",
@@ -61,5 +63,5 @@ Deno.test("it does not modify original templates", async function (): Promise<
   assert(content.includes(`image: "hello-world:<%= version %>"`));
 
   await remove(paths[0]);
-  await remove(paths[1]);  
+  await remove(paths[1]);
 });

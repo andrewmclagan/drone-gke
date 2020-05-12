@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
-import { base64Decode, jsonParse } from "./utils.ts";
+import { base64Decode, jsonParse } from "../utils.ts";
 
 // base64Decode()
 Deno.test("it can decode base64 strings", () => {

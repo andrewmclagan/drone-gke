@@ -1,7 +1,7 @@
 const { remove } = Deno;
 import { assert } from "https://deno.land/std/testing/asserts.ts";
 import { readFileStr } from "https://deno.land/std/fs/mod.ts";
-import Templates from "./Templates.ts";
+import Templates from "../Templates.ts";
 
 Deno.test("it can find templates and parse them", async function (): Promise<
   void
