@@ -9,7 +9,7 @@ steps:
       - apk --no-cache add make
       - make test
 
-  - name: cms-image
+  - name: build
     image: plugins/docker
     settings:
       repo: andrewmclagan/drone-gke
@@ -18,5 +18,5 @@ steps:
       password:
         from_secret: docker_password      
       tags: 
-        - "latest"
-        - "${DRONE_TAG=${DRONE_COMMIT}}"
+        - latest
+        - ${DRONE_TAG=${DRONE_COMMIT}}
