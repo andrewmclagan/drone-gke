@@ -20,7 +20,7 @@ Deno.test("it can return env var by checking multiple keys", () => {
 
 Deno.test("it can decode json strings", () => {
   assertEquals(Env.getJson("REPOSITORY"), {
-    remote: "git@github.com:andrewmclagan/drone-gke.git",
+    remote: "git@github.com:andrewmclagan/drone-gke-fixture.git",
     branch: "master",
   });
 });

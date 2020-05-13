@@ -14,4 +14,5 @@ export interface ClusterConfig {
 export interface RepositoryConfig {
   remote: string;
   branch?: string;
+  sshKey?: string;
 }
