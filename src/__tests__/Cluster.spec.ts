@@ -1,4 +1,7 @@
-import { assertEquals, assert } from "https://deno.land/std@0.50.0/testing/asserts.ts";
+import {
+  assertEquals,
+  assert,
+} from "https://deno.land/std@0.50.0/testing/asserts.ts";
 import {
   stub,
   Stub,
@@ -80,29 +83,24 @@ Deno.test("it sets cluster namespace context", async () => {
   assertEquals(command[1], "config");
   assertEquals(command[2], "set-context");
   assertEquals(command[3], "--current");
-  assertEquals(command[4], `--namespace ${config.namespace}`);
+  assertEquals(command[4], `--namespace=${config.namespace}`);
 });
 
 Deno.test("applies template configs", async () => {
   const cmd = new Cmd();
   const run: Stub<Cmd> = stub(cmd, "run");
-  const templates: string[] = [
-    "/mock/template.1.yaml",
-    "/mock/template.2.yaml",
-    "/mock/template.3.yaml",
-  ];
+  const path: string = "/path/to/defninitions";
 
   const cluster = new Cluster(config, cmd);
-  await cluster.apply(templates);
+  await cluster.apply(path);
 
-  assertEquals(run.calls.length, 3);
+  assertEquals(run.calls.length, 1);
 
-  for (let i = 0; i < run.calls.length; i++) {
-    assertEquals(run.calls[i].args[0], [
-        "kubectl",
-        "apply",
-        `-f /mock/template.${i+1}.yaml`,
-        "--record",
-      ]);      
-  }
+  assertEquals(run.calls[0].args[0], [
+    "kubectl",
+    "apply",
+    `--filename=${path}`,
+    "--recursive",
+    "--record",
+  ]);
 });

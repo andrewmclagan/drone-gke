@@ -1,30 +1,28 @@
-import { config } from "https://raw.githubusercontent.com/gewoonwoutje/deno-dotenv/master/dotenv.ts";
 import { assertEquals } from "https://deno.land/std@0.50.0/testing/asserts.ts";
 import Env from "../Env.ts";
 
-config({ path: "./.env.testing", export: true });
+Deno.env.set("FOO", "bar");
+Deno.env.set("BAR", '{"foo": "bar", "bar": "foo"}');
 
-// Env.get()
 Deno.test("it can return env var", () => {
-  assertEquals(Env.get("TEMPLATES"), "**/__fixtures__/**/*.{yml,yaml}");
+  assertEquals(Env.get("FOO"), "bar");
 });
 
 Deno.test("it can return env var by checking multiple keys", () => {
-  assertEquals(
-    Env.get(["NOT_TEMPLATES", "MAYBE_TEMPLATES", "TEMPLATES"]),
-    "**/__fixtures__/**/*.{yml,yaml}"
-  );
+  assertEquals(Env.get(["NOT_FOO", "MAYBE_FOO", "FOO"]), "bar");
 });
 
-// Env.getJson()
-
 Deno.test("it can decode json strings", () => {
-  assertEquals(Env.getJson("REPOSITORY"), {
-    remote: "git@github.com:andrewmclagan/drone-gke-fixture.git",
-    branch: "master",
+  assertEquals(Env.get("BAR"), {
+    foo: "bar",
+    bar: "foo",
   });
 });
 
-Deno.test("it always returns an object", () => {
-  assertEquals(Env.getJson("EMPTY"), {});
+Deno.test("it returns env as object", () => {
+  // Loose smoke test
+  assertEquals(Env.toObject().BAR, {
+    foo: "bar",
+    bar: "foo",
+  });
 });

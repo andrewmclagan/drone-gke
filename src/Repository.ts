@@ -1,5 +1,5 @@
 const { chmod, mkdir, makeTempDir } = Deno;
-import { writeFileStr } from "https://deno.land/std@0.50.0/fs/mod.ts";
+import { exists, writeFileStr } from "https://deno.land/std@0.50.0/fs/mod.ts";
 import { RepositoryConfig } from "./config.ts";
 import Cmd from "./Cmd.ts";
 
@@ -36,14 +36,24 @@ class Repository {
   }
 
   private async writeKeyFile(keyString: string): Promise<void> {
-    const keyPath: string = "/root/.ssh";
-    await mkdir(keyPath, { mode: 0o700, recursive: true });
+    const home = await Deno.dir('home');
+    const keyDir: string = `${home}/.ssh`;
+    const keyPath: string = `${keyDir}/id_rsa`;
+    const keyConfigPath: string = `${keyDir}/config`;
 
-    await writeFileStr(`${keyPath}/id_rsa`, keyString);
-    await chmod(`${keyPath}/id_rsa`, 0o600);
+    if (await exists(keyDir) === false) {
+      await mkdir(keyDir, { mode: 0o700, recursive: true });
+    }
 
-    await writeFileStr(`${keyPath}/config`, "StrictHostKeyChecking no\n");
-    await chmod(`${keyPath}/config`, 0o700);
+    if (await exists(keyPath) === false) {
+      await writeFileStr(keyPath, keyString);
+      await chmod(keyPath, 0o600);
+    }    
+
+    if (await exists(keyConfigPath) === false) {
+      await writeFileStr(keyConfigPath, "StrictHostKeyChecking no\n");
+      await chmod(keyConfigPath, 0o700);
+    }
   }
 }
 
