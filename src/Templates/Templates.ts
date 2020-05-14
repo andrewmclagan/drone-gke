@@ -1,44 +1,25 @@
-const { makeTempDir } = Deno;
 import Resolver from "./Resolver.ts";
 import Parser from "./Parser.ts";
-import Repository from "../Repository.ts";
-import Cmd from "../Cmd.ts";
-import { RepositoryConfig } from "../config.ts";
+import { log } from "../utils.ts";
 
 class Templates {
   glob: string;
 
-  cmd: Cmd;
+  root: string;
 
-  repository?: Repository;
-
-  repositoryConfig?: RepositoryConfig;
-
-  constructor(glob: string = "**/*.{yml,yaml}", cmd: Cmd, config?: RepositoryConfig) {
+  constructor(root: string = ".", glob: string = "**/*.{yml,yaml}") {
+    this.root = root;
     this.glob = glob;
-    this.cmd = cmd;
-    if (config) {
-      this.repository = new Repository(config, cmd);
-    }
   }
 
-  async parse(params?: any): Promise<string[]> {
-    const tempDir: string = await makeTempDir({ prefix: "drone-gke-templates" });
+  async parse(params?: any): Promise<string> {
+    const paths: string[] = await new Resolver(this.root, this.glob).resolve();
 
-    let templateRoot: string = ".";
+    log(`Matched ${paths.length} templates in ${this.root}/${this.glob}`);
 
-    if (this.repository) {
-      await this.repository.clone(tempDir);
-      templateRoot = tempDir;
-    }
+    const definitionRoot: string = await new Parser(paths).parse(params);
 
-    const resolver = new Resolver(this.glob, templateRoot);
-    const paths: Array<string> = await resolver.resolve();
-
-    const parser = new Parser(paths, tempDir);
-    const parsedPaths: Array<string> = await parser.parse(params);
-
-    return parsedPaths;
+    return definitionRoot;
   }
 }
 

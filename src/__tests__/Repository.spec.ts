@@ -1,5 +1,5 @@
-import { assertEquals, assert } from "https://deno.land/std/testing/asserts.ts";
-import { exists } from "https://deno.land/std/fs/mod.ts";
+import { assertEquals, assert } from "https://deno.land/std@0.50.0/testing/asserts.ts";
+import { exists } from "https://deno.land/std@0.50.0/fs/mod.ts";
 import {
   stub,
   Stub,

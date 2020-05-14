@@ -1,6 +1,6 @@
 const { remove } = Deno;
-import { assert } from "https://deno.land/std/testing/asserts.ts";
-import { readFileStr } from "https://deno.land/std/fs/mod.ts";
+import { assert } from "https://deno.land/std@0.50.0/testing/asserts.ts";
+import { readFileStr } from "https://deno.land/std@0.50.0/fs/mod.ts";
 import Parser from "../Parser.ts";
 
 const fixtures: Array<string> = [

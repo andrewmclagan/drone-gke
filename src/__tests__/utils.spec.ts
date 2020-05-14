@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.50.0/testing/asserts.ts";
 import { base64Decode, jsonParse } from "../utils.ts";
 
 // base64Decode()

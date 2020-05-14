@@ -1,9 +1,9 @@
-import { assertEquals, assert } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals, assert } from "https://deno.land/std@0.50.0/testing/asserts.ts";
 import {
   stub,
   Stub,
 } from "https://raw.githubusercontent.com/udibo/mock/v0.3.0/stub.ts";
-import { exists } from "https://deno.land/std/fs/mod.ts";
+import { exists } from "https://deno.land/std@0.50.0/fs/mod.ts";
 import Cmd from "../Cmd.ts";
 import Cluster from "../Cluster.ts";
 

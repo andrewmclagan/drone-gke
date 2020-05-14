@@ -1,5 +1,5 @@
-const { chmod, makeTempDir } = Deno;
-import { writeFileStr } from "https://deno.land/std/fs/mod.ts";
+const { chmod, mkdir, makeTempDir } = Deno;
+import { writeFileStr } from "https://deno.land/std@0.50.0/fs/mod.ts";
 import { RepositoryConfig } from "./config.ts";
 import Cmd from "./Cmd.ts";
 
@@ -13,22 +13,17 @@ class Repository {
     this.cmd = cmd;
   }
 
-  async clone(path: string): Promise<boolean> {
-    const { branch = "master", remote, sshKey } = this.config;
-    let keyPath: string = "";
-    if (sshKey) {
-      keyPath = await this.writeSshKey(sshKey);
+  async clone(): Promise<string> {
+    const { branch = "master", remote, privateKey } = this.config;
+    if (privateKey) {
+      await this.writeKeyFile(privateKey);
     }
-    return await this.gitClone(remote, branch, path, keyPath);
+    return await this.gitClone(remote, branch);
   }
 
-  private async gitClone(
-    remote: string,
-    branch: string,
-    path: string,
-    keyPath?: string
-  ): Promise<boolean> {
-    const command: string[] = [
+  private async gitClone(remote: string, branch: string): Promise<string> {
+    const path: string = await makeTempDir();
+    await this.cmd.run([
       "git",
       "clone",
       "--single-branch",
@@ -36,19 +31,19 @@ class Repository {
       "--depth=1",
       remote,
       path,
-    ];
-    if (keyPath) {
-      command.splice(1, 0, `-c core.sshCommand="ssh -i ${keyPath}"`);
-    }
-    return await this.cmd.run(command);
+    ]);
+    return path;
   }
 
-  private async writeSshKey(key: string): Promise<string> {
-    const tempDir: string = await makeTempDir({ prefix: "drone-gke-key" });
-    const path: string = `${tempDir}/gke_id_rsa`;
-    await writeFileStr(path, key);
-    await chmod(path, 0o600);
-    return path;
+  private async writeKeyFile(keyString: string): Promise<void> {
+    const keyPath: string = "/root/.ssh";
+    await mkdir(keyPath, { mode: 0o700, recursive: true });
+
+    await writeFileStr(`${keyPath}/id_rsa`, keyString);
+    await chmod(`${keyPath}/id_rsa`, 0o600);
+
+    await writeFileStr(`${keyPath}/config`, "StrictHostKeyChecking no\n");
+    await chmod(`${keyPath}/config`, 0o700);
   }
 }
 

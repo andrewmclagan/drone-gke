@@ -4,15 +4,18 @@ import Cmd from "./Cmd.ts";
 import Plugin from "./Plugin.ts";
 
 let templates = Env.get(["GKE_TEMPLATES", "PLUGIN_TEMPLATES"]);
-let repository = Env.getJson(["GKE_REPOSITORY", "PLUGIN_REPOSITORY"]);
-let cluster = Env.getJson(["GKE_CLUSTER", "PLUGIN_CLUSTER"]);
+let repository = Env.get(["GKE_REPOSITORY", "PLUGIN_REPOSITORY"]);
+let cluster = Env.get(["GKE_CLUSTER", "PLUGIN_CLUSTER"]);
 
 let config = {
   templates,
-  repository,
+  repository: repository ?? {
+    ...repository,
+    privateKey: base64Decode(repository.privateKey)
+  },
   cluster: {
     ...cluster,
-    serviceKey: jsonParse(base64Decode(cluster.service_key)),
+    serviceKey: jsonParse(base64Decode(cluster.serviceKey)),
   },
 };
 

@@ -1,3 +1,6 @@
+import { green, magenta } from "https://deno.land/std@0.50.0/fmt/mod.ts";
+import Env from "./Env.ts";
+
 export function base64Decode(value: string): string {
   try {
     return atob(value);
@@ -20,4 +23,14 @@ export function jsonStringify(value: any): string {
   } catch (error) {
     return "";
   }
+}
+
+export function debug(value: any): void {
+  if (Env.get(["GKE_DEBUG", "PLUGIN_DEBUG"])) {
+    console.log(magenta('DEBUG >>'), value);
+  }
+}
+
+export function log(value: any): void {
+  console.log(green('LOG >>'), value);
 }

@@ -1,8 +1,10 @@
-const { env } = Deno;
 import { Config } from "./config.ts";
 import Cmd from "./Cmd.ts";
+import Env from "./Env.ts";
 import Templates from "./Templates/Templates.ts";
+import Repository from "./Repository.ts";
 import Cluster from "./Cluster.ts";
+import { debug } from "./utils.ts";
 
 class Plugin {
   protected config: Config;
@@ -15,17 +17,28 @@ class Plugin {
   }
 
   async run(): Promise<void> {
-    const { templates: glob, repository: repoConfig, cluster: clusterConfig } = this.config;
+    const { cluster: clusterConfig } = this.config;
 
-    const templates = new Templates(glob, this.cmd, repoConfig);
+    debug(this.config);
 
-    const cluster = new Cluster(clusterConfig, this.cmd);
+    const definitionRoot: string = await this.parseTemplates();
 
-    const params: any = env.toObject();
-    const templatePaths: Array<string> = await templates.parse(params);
-
+    const cluster: Cluster = new Cluster(clusterConfig, this.cmd);
     await cluster.authorize();
-    await cluster.apply(templatePaths);
+    await cluster.apply(definitionRoot);
+  }
+
+  private async parseTemplates(): Promise<string> {
+    const { templates: glob, repository: repoConfig } = this.config;
+
+    const params: any = Env.toObject();
+    let templateRoot: string = ".";
+
+    if (repoConfig) {
+      templateRoot = await new Repository(repoConfig, this.cmd).clone();
+    }
+
+    return await new Templates(templateRoot, glob).parse(params);
   }
 }
 

@@ -1,34 +1,33 @@
-const { Buffer, copy, readAll } = Deno;
-import { basename } from "https://deno.land/std/path/mod.ts";
-import { exists, writeFileStr } from "https://deno.land/std/fs/mod.ts";
-import { posix } from "https://deno.land/std/path/mod.ts";
-import { v4 as uuid } from "https://deno.land/std/uuid/mod.ts";
+const { Buffer, copy, readAll, writeTextFile, makeTempDir } = Deno;
+import { basename } from "https://deno.land/std@0.50.0/path/mod.ts";
+import { exists } from "https://deno.land/std@0.50.0/fs/mod.ts";
+import { posix } from "https://deno.land/std@0.50.0/path/mod.ts";
 import { renderFile } from "https://deno.land/x/dejs@0.4.0/mod.ts";
+import { debug } from "../utils.ts";
 
 class Parser {
-  paths: Array<string> = [];
-
-  root: string;
+  paths: string[] = [];
 
   decoder: TextDecoder;
 
-  constructor(paths: Array<string>, root: string) {
+  constructor(paths: string[]) {
     this.paths = paths;
-    this.root = root;
     this.decoder = new TextDecoder("utf-8");
   }
 
-  async parse(params: any = {}): Promise<string[]> {
-    let newPaths: Array<string> = [];
+  async parse(params: any = {}): Promise<string> {
+    const destDir: string = await makeTempDir();
+
     for (let i = 0; i < this.paths.length; i++) {
       if (await exists(this.paths[i])) {
+        debug(this.paths[i]);
         const content = await this.renderFile(this.paths[i], params);
-        const getNewPath = await this.getNewPath(this.paths[i]);
-        await this.writeFile(getNewPath, content);
-        newPaths.push(getNewPath);
+        const getNewPath = await this.getNewPath(destDir, this.paths[i]);
+        await writeTextFile(getNewPath, content);
       }
     }
-    return new Promise((resolve) => resolve(newPaths));
+
+    return new Promise((resolve) => resolve(destDir));
   }
 
   private async renderFile(path: string, params: any): Promise<string> {
@@ -39,15 +38,10 @@ class Parser {
     return this.decoder.decode(bytes);
   }
 
-  private async getNewPath(path: string): Promise<string> {
-    const id: string = uuid.generate();
+  private async getNewPath(dir: string, path: string): Promise<string> {
     const ext: string = posix.extname(path);
     const name: string = basename(path);
-    return `${this.root}/${name}.${id}${ext}`;
-  }
-
-  private async writeFile(path: string, content: string): Promise<void> {
-    await writeFileStr(path, content);
+    return `${dir}/${name}${ext}`;
   }
 }
 

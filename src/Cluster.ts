@@ -1,5 +1,4 @@
-const { makeTempDir } = Deno;
-import { writeFileStr } from "https://deno.land/std/fs/mod.ts";
+const { writeTextFile } = Deno;
 import { ClusterConfig } from "./config.ts";
 import { jsonStringify } from "./utils.ts";
 import Cmd from "./Cmd.ts";
@@ -22,14 +21,12 @@ class Cluster {
     }
   }
 
-  async apply(templates: Array<string>): Promise<void> {
-    for (let i = 0; i < templates.length; i++) {
-      await this.cmd.run(["kubectl", "apply", `-f ${templates[i]}`, "--record"]);
-    }
+  async apply(path: string): Promise<void> {
+    await this.cmd.run(["kubectl", "apply", `--filename=${path}`, "--recursive", "--record"]);
   }
 
   private async setAuthentication(key: any): Promise<boolean> {
-    const keyPath = await this.writeServiceKey(key);
+    const keyPath: string = await this.writeServiceKey(key);
     return await this.cmd.run([
       "gcloud",
       "auth",
@@ -57,15 +54,14 @@ class Cluster {
       "config",
       "set-context",
       "--current",
-      `--namespace ${namespace}`,
+      `--namespace=${namespace}`,
     ]);
   }
 
   private async writeServiceKey(key: any): Promise<string> {
-    const tempDir: string = await makeTempDir({ prefix: "drone-gke-key" });
-    const path: string = `${tempDir}/service-key.json`;
+    const path: string = `/tmp/service-key.json`;
     const keyString: string = jsonStringify(key);
-    await writeFileStr(path, keyString);
+    await writeTextFile(path, keyString);
     return path;
   }
 }
