@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: <%= name %>
+  name: example-deployment
 spec:
   selector:
     matchLabels:
-      foo: <%= labels.foo %>
-      bar: <%= labels.bar %>
+      foo: <%= FOO %>
+      bar: <%= BAR %>
   replicas: 1
   template:
     metadata:
       labels:
-        foo: <%= labels.foo %>
-        bar: <%= labels.bar %>
+        foo: <%= FOO %>
+        bar: <%= BAR %>
     spec:
       containers:
 
         - name: web
           imagePullPolicy: Always
-          image: "hello-world:<%= version %>"
+          image: "hello-world:<%= VERSION %>"
           ports:
             - containerPort: 80           

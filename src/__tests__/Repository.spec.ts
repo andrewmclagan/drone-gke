@@ -51,7 +51,5 @@ Deno.test({
     const home = await Deno.dir('home');
 
     assert(await exists(`${home}/.ssh/id_rsa`));
-
-    await Deno.remove(`${home}/.ssh/id_rsa`);
   },
 });

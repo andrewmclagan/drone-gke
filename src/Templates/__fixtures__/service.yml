@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: <%= name %>
+  name: example-service
   labels:
-    foo: <%= labels.foo %>
-    bar: <%= labels.bar %>
-    version: <%= version %>
+    foo: <%= FOO %>
+    bar: <%= BAR %>
+    version: <%= VERSION %>
 spec:
   ports:
     - port: 80
       targetPort: 80
   selector:
-    foo: <%= labels.foo %>
-    bar: <%= labels.bar %>
-    version: <%= version %>
+    foo: <%= FOO %>
+    bar: <%= BAR %>
+    version: <%= VERSION %>
