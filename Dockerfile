@@ -42,7 +42,7 @@ ADD . /var/drone-gke-plugin
 
 WORKDIR /var/drone-gke-plugin
 
-RUN make bundle
+RUN make build
 
 ENTRYPOINT ["make"]
 
