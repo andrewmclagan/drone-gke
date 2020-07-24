@@ -4,6 +4,7 @@ import Cmd from "./Cmd.ts";
 import Plugin from "./Plugin.ts";
 
 let glob = Env.get(["GKE_GLOB", "PLUGIN_GLOB"]);
+let repository = Env.get(["GKE_REPOSITORY", "PLUGIN_REPOSITORY"]);
 let cluster = Env.get(["GKE_CLUSTER", "PLUGIN_CLUSTER"]);
 
 let config = {
@@ -14,8 +15,6 @@ let config = {
     serviceKey: jsonParse(base64Decode(cluster.serviceKey)),
   },
 };
-
-let repository = Env.get(["GKE_REPOSITORY", "PLUGIN_REPOSITORY"]);
 
 if (repository) {
   config.repository = {
