@@ -3,12 +3,12 @@ import Env from "./Env.ts";
 import Cmd from "./Cmd.ts";
 import Plugin from "./Plugin.ts";
 
-let templates = Env.get(["GKE_TEMPLATES", "PLUGIN_TEMPLATES"]);
+let glob = Env.get(["GKE_GLOB", "PLUGIN_GLOB"]);
 let repository = Env.get(["GKE_REPOSITORY", "PLUGIN_REPOSITORY"]);
 let cluster = Env.get(["GKE_CLUSTER", "PLUGIN_CLUSTER"]);
 
 let config = {
-  templates,
+  glob,
   repository: repository ?? {
     ...repository,
     netrc: {
