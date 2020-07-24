@@ -22,7 +22,13 @@ class Cluster {
   }
 
   async apply(path: string): Promise<void> {
-    await this.cmd.run(["kubectl", "apply", `--filename=${path}`, "--recursive", "--record"]);
+    await this.cmd.run([
+      "kubectl",
+      "apply",
+      `--filename=${path}`,
+      "--recursive",
+      "--record",
+    ]);
   }
 
   private async setAuthentication(key: any): Promise<boolean> {

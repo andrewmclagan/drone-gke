@@ -17,21 +17,24 @@ class Plugin {
   }
 
   async run(): Promise<void> {
-    const { cluster: clusterConfig } = this.config;
-
     debug(this.config);
 
-    const definitionRoot: string = await this.parseTemplates();
+    const { cluster: clusterConfig } = this.config;
+
+    const templateRoot: string = await this.parseTemplates();
 
     const cluster: Cluster = new Cluster(clusterConfig, this.cmd);
+
     await cluster.authorize();
-    await cluster.apply(definitionRoot);
+
+    await cluster.apply(templateRoot);
   }
 
   private async parseTemplates(): Promise<string> {
-    const { templates: glob, repository: repoConfig } = this.config;
+    const { glob, repository: repoConfig } = this.config;
 
     const params: any = Env.toObject();
+
     let templateRoot: string = ".";
 
     if (repoConfig) {

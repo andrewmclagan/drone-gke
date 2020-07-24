@@ -11,7 +11,11 @@ let config = {
   templates,
   repository: repository ?? {
     ...repository,
-    privateKey: base64Decode(repository.privateKey)
+    netrc: {
+      machine: Env.get('DRONE_NETRC_MACHINE'),
+      login: Env.get('DRONE_NETRC_USERNAME'),
+      password: Env.get('DRONE_NETRC_PASSWORD')
+    }
   },
   cluster: {
     ...cluster,
@@ -19,4 +23,4 @@ let config = {
   },
 };
 
-new Plugin(config, new Cmd).run();
+new Plugin(config, new Cmd()).run();

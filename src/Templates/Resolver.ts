@@ -1,5 +1,5 @@
-import { walk } from "https://deno.land/std@0.50.0/fs/mod.ts";
-import { globToRegExp } from "https://deno.land/std@0.50.0/path/mod.ts";
+import { walk } from "https://deno.land/std@0.61.0/fs/mod.ts";
+import { globToRegExp } from "https://deno.land/std@0.61.0/path/mod.ts";
 
 class Resolver {
   private root: string;
@@ -12,22 +12,21 @@ class Resolver {
   }
 
   async resolve(): Promise<string[]> {
-    return await this.getPaths();
-  }
-
-  private async getPaths(): Promise<string[]> {
     let paths: string[] = [];
-    let files = walk(this.root, { match: [this.getRegEx()] });
+
+    const pattern: RegExp = globToRegExp(this.glob, {
+      extended: true,
+    });
+
+    let files = walk(this.root, {
+      match: [pattern],
+    });
+
     for await (const entry of files) {
       paths.push(entry.path);
     }
-    return paths;
-  }
 
-  private getRegEx(): RegExp {
-    return globToRegExp(this.glob, {
-      extended: true,
-    });
+    return paths;
   }
 }
 

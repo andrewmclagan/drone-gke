@@ -1,12 +1,12 @@
 import {
   assertEquals,
   assert,
-} from "https://deno.land/std@0.50.0/testing/asserts.ts";
+} from "https://deno.land/std@0.61.0/testing/asserts.ts";
 import {
   stub,
   Stub,
 } from "https://raw.githubusercontent.com/udibo/mock/v0.3.0/stub.ts";
-import { exists } from "https://deno.land/std@0.50.0/fs/mod.ts";
+import { exists } from "https://deno.land/std@0.61.0/fs/mod.ts";
 import Cmd from "../Cmd.ts";
 import Cluster from "../Cluster.ts";
 
@@ -40,7 +40,7 @@ Deno.test("it sets cluster authentication", async () => {
   assertEquals(command[5], `--project=${config.serviceKey.project_id}`);
 });
 
-Deno.test("it create an auth key file", async () => {
+Deno.test("it creates an auth key file", async () => {
   const cmd = new Cmd();
   const run: Stub<Cmd> = stub(cmd, "run");
 

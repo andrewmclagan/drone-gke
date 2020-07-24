@@ -1,5 +1,5 @@
 export interface Config {
-  templates?: string;
+  glob?: string;
   repository?: RepositoryConfig;
   cluster: ClusterConfig;
 }
@@ -14,5 +14,11 @@ export interface ClusterConfig {
 export interface RepositoryConfig {
   remote: string;
   branch?: string;
-  privateKey?: string;
+  netrc: NetrcConfig;
+}
+
+export interface NetrcConfig {
+  machine: string;
+  login: string;
+  password: string;
 }

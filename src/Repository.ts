@@ -1,7 +1,14 @@
-const { chmod, mkdir, makeTempDir } = Deno;
-import { exists, writeFileStr } from "https://deno.land/std@0.50.0/fs/mod.ts";
+import { writeFileStr } from "https://deno.land/std@0.61.0/fs/mod.ts";
+import { sprintf } from "https://deno.land/std@0.61.0/fmt/printf.ts";
+import { join } from "https://deno.land/std@0.61.0/path/mod.ts";
 import { RepositoryConfig } from "./config.ts";
 import Cmd from "./Cmd.ts";
+
+const netrcFile: string = `
+machine %s
+login %s
+password %s
+`;
 
 class Repository {
   private config: RepositoryConfig;
@@ -14,15 +21,16 @@ class Repository {
   }
 
   async clone(): Promise<string> {
-    const { branch = "master", remote, privateKey } = this.config;
-    if (privateKey) {
-      await this.writeKeyFile(privateKey);
-    }
+    const { branch = "master", remote, netrc } = this.config;
+
+    await this.writeNetrc(netrc.machine, netrc.login, netrc.password);
+
     return await this.gitClone(remote, branch);
   }
 
   private async gitClone(remote: string, branch: string): Promise<string> {
-    const path: string = await makeTempDir();
+    const path: string = await Deno.makeTempDir();
+
     await this.cmd.run([
       "git",
       "clone",
@@ -32,28 +40,24 @@ class Repository {
       remote,
       path,
     ]);
+
     return path;
   }
 
-  private async writeKeyFile(keyString: string): Promise<void> {
-    const home = await Deno.dir('home');
-    const keyDir: string = `${home}/.ssh`;
-    const keyPath: string = `${keyDir}/id_rsa`;
-    const keyConfigPath: string = `${keyDir}/config`;
+  private async writeNetrc(
+    machine: string,
+    login: string,
+    password: string
+  ): Promise<void> {
+    const netrcContent: string = sprintf(netrcFile, machine, login, password);
 
-    if (await exists(keyDir) === false) {
-      await mkdir(keyDir, { mode: 0o700, recursive: true });
-    }
+    const homePath: string = <string>Deno.env.get('HOME');
 
-    if (await exists(keyPath) === false) {
-      await writeFileStr(keyPath, keyString);
-      await chmod(keyPath, 0o600);
-    }    
+    const netrcPath: string = join(homePath, ".netrc");
 
-    if (await exists(keyConfigPath) === false) {
-      await writeFileStr(keyConfigPath, "StrictHostKeyChecking no\n");
-      await chmod(keyConfigPath, 0o700);
-    }
+    await writeFileStr(netrcPath, netrcContent);
+
+    await Deno.chmod(netrcPath, 0o600);
   }
 }
 

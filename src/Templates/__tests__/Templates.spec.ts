@@ -1,72 +1,39 @@
-const { remove } = Deno;
-import { assert } from "https://deno.land/std@0.50.0/testing/asserts.ts";
-import { readFileStr } from "https://deno.land/std@0.50.0/fs/mod.ts";
+import { assertStringContains } from "https://deno.land/std@0.61.0/testing/asserts.ts";
+import { walk, readFileStr } from "https://deno.land/std@0.61.0/fs/mod.ts";
 import Templates from "../Templates.ts";
+
+// setup
+
+const __dirname = new URL(".", import.meta.url).pathname;
+
+const fixturesDir: string = `${__dirname}../__fixtures__`;
+
+const glob: string = "**/*.{yml,yaml}";
+
+// describe
 
 Deno.test("it can find templates and parse them", async function (): Promise<
   void
 > {
-  const glob: string = "**/src/**/*.{yml,yaml}";
+  let templates = new Templates(fixturesDir, glob);
 
-  let templates = new Templates(glob);
-
-  const paths: Array<string> = await templates.parse({
-    name: "example-service",
-    version: "1.1.1",
-    labels: { foo: "bar-123", bar: "foo-123" },
+  const pathToTemplates: string = await templates.parse({
+    name: "example-app",
+    version: "1.2.3",
+    meta: {
+      tier: "network",
+      deployment: "green",
+    },
   });
 
-  // deployment.yaml
-  let content = await readFileStr(paths[0]);
-  assert(content.includes(`name: example-service`));
-  assert(content.includes(`foo: bar-123`));
-  assert(content.includes(`bar: foo-123`));
-  assert(content.includes(`image: "hello-world:1.1.1"`));
+  let files = walk(pathToTemplates, { includeDirs: false });
 
-  // service.yml
-  content = await readFileStr(paths[1]);
-  assert(content.includes(`name: example-service`));
-  assert(content.includes(`foo: bar-123`));
-  assert(content.includes(`bar: foo-123`));
-  assert(content.includes(`version: 1.1.1`));
+  for await (const entry of files) {
+    let content: string = await readFileStr(entry.path);
 
-  await remove(paths[0]);
-  await remove(paths[1]);
-});
-
-Deno.test(
-  "it can clone a template config repository and parse them",
-  async function (): Promise<void> {
-    const glob: string = "**/*.{yml,yaml}";
-
-    const config: any = {
-      remote: "git@github.com:andrewmclagan/drone-gke-fixture.git",
-      branch: "master",
-    };
-
-    let templates = new Templates(glob, config);
-
-    const paths: Array<string> = await templates.parse({
-      name: "example-service",
-      version: "1.1.1",
-      labels: { foo: "bar-123", bar: "foo-123" },
-    });
-
-    // deployment.yaml
-    let content = await readFileStr(paths[0]);
-    assert(content.includes(`name: example-service`));
-    assert(content.includes(`foo: bar-123`));
-    assert(content.includes(`bar: foo-123`));
-    assert(content.includes(`image: "hello-world:1.1.1"`));
-
-    // service.yml
-    content = await readFileStr(paths[1]);
-    assert(content.includes(`name: example-service`));
-    assert(content.includes(`foo: bar-123`));
-    assert(content.includes(`bar: foo-123`));
-    assert(content.includes(`version: 1.1.1`));
-
-    await remove(paths[0]);
-    await remove(paths[1]);
+    assertStringContains(content, `name: example-app`);
+    assertStringContains(content, `version: 1.2.3`);
+    assertStringContains(content, `tier: network`);
+    assertStringContains(content, `deployment: green`);
   }
-);
+});

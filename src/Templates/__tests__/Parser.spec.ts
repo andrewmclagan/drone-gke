@@ -1,67 +1,66 @@
-const { remove } = Deno;
-import { assert } from "https://deno.land/std@0.50.0/testing/asserts.ts";
-import { readFileStr } from "https://deno.land/std@0.50.0/fs/mod.ts";
+import { assertStringContains } from "https://deno.land/std@0.61.0/testing/asserts.ts";
+import { walk, readFileStr } from "https://deno.land/std@0.61.0/fs/mod.ts";
 import Parser from "../Parser.ts";
 
-const fixtures: Array<string> = [
-  "./src/Templates/__fixtures__/service.yml",
-  "./src/Templates/__fixtures__/deployment.yaml",
+// setup
+
+const __dirname = new URL(".", import.meta.url).pathname;
+
+const fixturesDir: string = `${__dirname}../__fixtures__`;
+
+const fixtures: string[] = [
+  `${fixturesDir}/service.yml`,
+  `${fixturesDir}/deployment.yaml`,
 ];
 
-const root: string = "/tmp/drone-gke";
+// describe
 
 Deno.test("it can parse templates", async function (): Promise<void> {
-  let parser = new Parser(fixtures, root);
+  const parser = new Parser(fixtures);
 
-  const paths = await parser.parse({
-    name: "example-service",
-    version: "1.1.1",
-    labels: { foo: "bar-123", bar: "foo-123" },
+  const path = await parser.parse({
+    name: "example-app",
+    version: "1.2.3",
+    meta: {
+      tier: "network",
+      deployment: "green",
+    },
   });
 
-  // service.yml
-  let content: string = await readFileStr(paths[0]);
-  assert(content.includes(`name: example-service`));
-  assert(content.includes(`foo: bar-123`));
-  assert(content.includes(`bar: foo-123`));
-  assert(content.includes(`version: 1.1.1`));
+  let files = walk(path, { includeDirs: false });
 
-  // deployment.yaml
-  content = await readFileStr(paths[1]);
-  assert(content.includes(`name: example-service`));
-  assert(content.includes(`foo: bar-123`));
-  assert(content.includes(`bar: foo-123`));
-  assert(content.includes(`image: "hello-world:1.1.1"`));
+  for await (const entry of files) {
+    let content: string = await readFileStr(entry.path);
 
-  await remove(paths[0]);
-  await remove(paths[1]);
+    assertStringContains(content, `name: example-app`);
+    assertStringContains(content, `version: 1.2.3`);
+    assertStringContains(content, `tier: network`);
+    assertStringContains(content, `deployment: green`);
+  }
 });
 
 Deno.test("it does not modify original templates", async function (): Promise<
   void
 > {
-  let parser = new Parser(fixtures, root);
+  let parser = new Parser(fixtures);
 
-  const paths = await parser.parse({
-    name: "example-service",
-    version: "1.1.1",
-    labels: { foo: "bar-123", bar: "foo-123" },
+  await parser.parse({
+    name: "example-app",
+    version: "1.2.3",
+    meta: {
+      tier: "network",
+      deployment: "green",
+    },
   });
 
-  // service.yml
-  let content: string = await readFileStr(fixtures[0]);
-  assert(content.includes(`name: <%= name %>`));
-  assert(content.includes(`foo: <%= labels.foo %>`));
-  assert(content.includes(`bar: <%= labels.bar %>`));
-  assert(content.includes(`version: <%= version %>`));
+  let files = walk(fixturesDir, { includeDirs: false });
 
-  // deployment.yaml
-  content = await readFileStr(fixtures[1]);
-  assert(content.includes(`name: <%= name %>`));
-  assert(content.includes(`foo: <%= labels.foo %>`));
-  assert(content.includes(`bar: <%= labels.bar %>`));
-  assert(content.includes(`image: "hello-world:<%= version %>"`));
+  for await (const entry of files) {
+    let content: string = await readFileStr(entry.path);
 
-  await remove(paths[0]);
-  await remove(paths[1]);
+    assertStringContains(content, `name: <%= name %>`);
+    assertStringContains(content, `version: <%= version %>`);
+    assertStringContains(content, `tier: <%= meta.tier %>`);
+    assertStringContains(content, `deployment: <%= meta.deployment %>`);
+  }
 });

@@ -3,14 +3,16 @@ kind: Service
 metadata:
   name: example-service
   labels:
-    foo: <%= FOO %>
-    bar: <%= BAR %>
-    version: <%= VERSION %>
+    name: <%= name %>
+    version: <%= version %>
+    tier: <%= meta.tier %>
+    deployment: <%= meta.deployment %>
 spec:
   ports:
     - port: 80
       targetPort: 80
   selector:
-    foo: <%= FOO %>
-    bar: <%= BAR %>
-    version: <%= VERSION %>
+    name: <%= name %>
+    version: <%= version %>
+    tier: <%= meta.tier %>
+    deployment: <%= meta.deployment %>

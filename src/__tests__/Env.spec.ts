@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.50.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.61.0/testing/asserts.ts";
 import Env from "../Env.ts";
 
 Deno.env.set("FOO", "bar");

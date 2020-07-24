@@ -4,12 +4,12 @@ name: default
 steps:
 
   - name: test
-    image: hayd/deno:alpine-1.0.0-rc2
+    image: hayd/alpine-deno:1.2.0
     commands:
       - apk --no-cache add make
       - make test
 
-  - name: build
+  - name: push
     image: plugins/docker
     settings:
       repo: andrewmclagan/drone-gke

@@ -17,9 +17,9 @@ class Templates {
 
     log(`Matched ${paths.length} templates in ${this.root}/${this.glob}`);
 
-    const definitionRoot: string = await new Parser(paths).parse(params);
+    const destPath: string = await new Parser(paths).parse(params);
 
-    return definitionRoot;
+    return destPath;
   }
 }
 

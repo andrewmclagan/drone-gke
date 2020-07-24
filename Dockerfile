@@ -1,4 +1,4 @@
-FROM hayd/deno:alpine-1.0.0-rc2 AS build
+FROM hayd/alpine-deno:1.2.0 AS build
 
 #
 #--------------------------------------------------------------------------

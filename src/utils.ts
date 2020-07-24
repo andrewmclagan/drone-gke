@@ -1,4 +1,4 @@
-import { green, magenta } from "https://deno.land/std@0.50.0/fmt/mod.ts";
+import { green, magenta } from "https://deno.land/std@0.61.0/fmt/colors.ts";
 import Env from "./Env.ts";
 
 export function base64Decode(value: string): string {

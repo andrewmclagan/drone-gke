@@ -1,7 +1,7 @@
 import {
   assertEquals,
   assert,
-} from "https://deno.land/std@0.50.0/testing/asserts.ts";
+} from "https://deno.land/std@0.61.0/testing/asserts.ts";
 import {
   stub,
   Stub,
@@ -9,15 +9,17 @@ import {
 import Plugin from "../Plugin.ts";
 import Cmd from "../Cmd.ts";
 
-/**
- * TODO: extend this as an integration test
- */
+// describe
 
 Deno.test({
   name: "it works (smoke test)",
   async fn(): Promise<void> {
+    Deno.env.set("name", "example-app");
+    Deno.env.set("version", "v1.0.0");
+    Deno.env.set("meta", '{"tier": "backend", "deployment": "green"}');
+
     const config: any = {
-      templates: "**/__fixtures__/**/*.{yaml,yml}",
+      glob: `src/Templates/__fixtures__/**/*.{yaml,yml}`,
       repository: undefined,
       cluster: {
         name: "example-cluster",
@@ -28,10 +30,6 @@ Deno.test({
         },
       },
     };
-
-    Deno.env.set("FOO", "bar");
-    Deno.env.set("BAR", "foo");
-    Deno.env.set("VERSION", "v1.0.0");
 
     const cmd = new Cmd();
     const run: Stub<Cmd> = stub(cmd, "run");
