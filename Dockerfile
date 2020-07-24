@@ -45,4 +45,4 @@ RUN deno bundle --unstable ./src/index.ts ./drone-gke.js
 
 ENTRYPOINT ["deno"]
 
-CMD ["run","--unstable","-A","./drone-gke.js"]
+CMD ["run","--unstable","-A","/var/drone-gke-plugin/drone-gke.js"]
