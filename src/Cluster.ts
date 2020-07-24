@@ -1,6 +1,6 @@
 const { writeTextFile } = Deno;
 import { ClusterConfig } from "./config.ts";
-import { jsonStringify } from "./utils.ts";
+import { jsonStringify, debug } from "./utils.ts";
 import Cmd from "./Cmd.ts";
 
 class Cluster {
@@ -66,8 +66,16 @@ class Cluster {
 
   private async writeServiceKey(key: any): Promise<string> {
     const path: string = `/tmp/service-key.json`;
+
     const keyString: string = jsonStringify(key);
+
     await writeTextFile(path, keyString);
+
+    debug({
+      serviceKeyPath: path,
+      serviceKey: key
+    });
+
     return path;
   }
 }
