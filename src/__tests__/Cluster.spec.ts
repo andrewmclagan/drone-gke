@@ -6,7 +6,7 @@ import {
   stub,
   Stub,
 } from "https://raw.githubusercontent.com/udibo/mock/v0.3.0/stub.ts";
-import { exists } from "https://deno.land/std@0.61.0/fs/mod.ts";
+import { exists, readFileStr } from "https://deno.land/std@0.61.0/fs/mod.ts";
 import Cmd from "../Cmd.ts";
 import Cluster from "../Cluster.ts";
 
@@ -49,8 +49,10 @@ Deno.test("it creates an auth key file", async () => {
 
   const keyArg: string = run.calls[0].args[0][4];
 
+  const keyPath: string = keyArg.split(`--key-file=`)[1];
+
   assert(keyArg.includes(`service-key.json`));
-  assert(await exists(keyArg.split(`--key-file=`)[1]));
+  assert(await exists(keyPath));
 });
 
 Deno.test("it sets cluster context", async () => {
