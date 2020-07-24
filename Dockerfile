@@ -12,7 +12,6 @@ ENV CLOUDSDK_PYTHON=python3
 ENV PATH /google-cloud-sdk/bin:$PATH
 
 RUN apk --no-cache add \
-        make \
         curl \
         python3 \
         py3-crcmod \
@@ -42,8 +41,8 @@ ADD . /var/drone-gke-plugin
 
 WORKDIR /var/drone-gke-plugin
 
-RUN make build
+RUN deno bundle --unstable ./src/index.ts ./drone-gke.js
 
-ENTRYPOINT ["make"]
+ENTRYPOINT ["deno"]
 
-CMD ["run"]
+CMD ["run","--unstable","-A","./drone-gke.js"]
