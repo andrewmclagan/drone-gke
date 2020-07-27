@@ -24,7 +24,7 @@ Deno.test({
       cluster: {
         name: "example-cluster",
         zone: "australia-southeast1-a",
-        serviceKey: {
+        service_key: {
           project_id: "example-project",
           client_email: "example@example.iam.gserviceaccount.com",
         },

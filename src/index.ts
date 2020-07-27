@@ -12,7 +12,7 @@ let config = {
   repository: undefined,
   cluster: {
     ...cluster,
-    serviceKey: jsonParse(base64Decode(cluster.service_key)),
+    service_key: jsonParse(base64Decode(cluster.service_key)),
   },
 };
 

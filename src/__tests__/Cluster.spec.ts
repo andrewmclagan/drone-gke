@@ -14,7 +14,7 @@ const config = {
   name: "example-cluster",
   zone: "zone-australia-1a",
   namespace: "production",
-  serviceKey: {
+  service_key: {
     type: "...",
     project_id: "example-project",
     private_key_id: "...",
@@ -36,8 +36,8 @@ Deno.test("it sets cluster authentication", async () => {
   assertEquals(command[0], "gcloud");
   assertEquals(command[1], "auth");
   assertEquals(command[2], "activate-service-account");
-  assertEquals(command[3], config.serviceKey.client_email);
-  assertEquals(command[5], `--project=${config.serviceKey.project_id}`);
+  assertEquals(command[3], config.service_key.client_email);
+  assertEquals(command[5], `--project=${config.service_key.project_id}`);
 });
 
 Deno.test("it creates an auth key file", async () => {
