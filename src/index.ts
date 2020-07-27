@@ -7,18 +7,12 @@ let glob = Env.get(["GKE_GLOB", "PLUGIN_GLOB"]);
 let repository = Env.get(["GKE_REPOSITORY", "PLUGIN_REPOSITORY"]);
 let cluster = Env.get(["GKE_CLUSTER", "PLUGIN_CLUSTER"]);
 
-debug({
-  raw:cluster.serviceKey,
-  decoded:base64Decode(cluster.serviceKey),
-  parsed:jsonParse(base64Decode(cluster.serviceKey))
-});
-
 let config = {
   glob,
   repository: undefined,
   cluster: {
     ...cluster,
-    serviceKey: jsonParse(base64Decode(cluster.serviceKey)),
+    serviceKey: jsonParse(base64Decode(cluster.service_key)),
   },
 };
 

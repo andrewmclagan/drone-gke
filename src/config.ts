@@ -5,7 +5,7 @@ export interface Config {
 }
 
 export interface ClusterConfig {
-  serviceKey: object;
+  service_key: object;
   name: string;
   zone: string;
   namespace?: string;

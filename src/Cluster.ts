@@ -14,7 +14,7 @@ class Cluster {
   }
 
   async authorize(): Promise<void> {
-    await this.setAuthentication(this.config.serviceKey);
+    await this.setAuthentication(this.config.service_key);
     await this.setCluster();
     if (this.config.namespace) {
       await this.setNamespace(this.config.namespace);
@@ -32,7 +32,7 @@ class Cluster {
   }
 
   private async setAuthentication(key: any): Promise<boolean> {
-    const keyPath: string = await this.writeServiceKey(key);
+    const keyPath: string = await this.writeServicekey(key);
     return await this.cmd.run([
       "gcloud",
       "auth",
@@ -64,17 +64,12 @@ class Cluster {
     ]);
   }
 
-  private async writeServiceKey(key: any): Promise<string> {
+  private async writeServicekey(key: any): Promise<string> {
     const path: string = `/tmp/gc-service-key.json`;
 
     const keyString: string = jsonStringify(key);
 
     await writeTextFile(path, keyString);
-
-    debug({
-      serviceKeyPath: path,
-      serviceKey: key
-    });
 
     return path;
   }
