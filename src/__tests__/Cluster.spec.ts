@@ -51,7 +51,7 @@ Deno.test("it creates an auth key file", async () => {
 
   const keyPath: string = keyArg.split(`--key-file=`)[1];
 
-  assert(keyArg.includes(`service-key.json`));
+  assert(keyArg.includes(`gc-service-key.json`));
   assert(await exists(keyPath));
 });
 

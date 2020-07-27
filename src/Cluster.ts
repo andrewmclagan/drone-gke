@@ -65,7 +65,7 @@ class Cluster {
   }
 
   private async writeServiceKey(key: any): Promise<string> {
-    const path: string = `/tmp/service-key.json`;
+    const path: string = `/tmp/gc-service-key.json`;
 
     const keyString: string = jsonStringify(key);
 

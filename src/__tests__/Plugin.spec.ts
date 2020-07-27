@@ -47,7 +47,7 @@ Deno.test({
       "auth",
       "activate-service-account",
       "example@example.iam.gserviceaccount.com",
-      "--key-file=/tmp/service-key.json",
+      "--key-file=/tmp/gc-service-key.json",
       "--project=example-project",
     ]);
 
