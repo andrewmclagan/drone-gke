@@ -22,12 +22,12 @@ class Cluster {
   }
 
   async apply(path: string): Promise<void> {
-    await this.cmd.run([
-      "kubectl",
-      "apply",
-      `--kustomize=${path}`,
-      "--record",
-    ]);
+    await this.cmd.run(["kubectl", "apply", `--kustomize=${path}`, "--record"]);
+  }
+
+  async force(): Promise<void> {
+    await this.cmd.run(["kubectl", "rollout", "restart", "deployments"]);
+    await this.cmd.run(["kubectl", "rollout", "restart", "statefulsets"]);
   }
 
   private async setAuthentication(key: any): Promise<boolean> {

@@ -17,13 +17,17 @@ class Plugin {
   async run(): Promise<void> {
     debug(this.config);
 
-    const { kustomize, cluster: clusterConfig } = this.config;
+    const { kustomize, force, cluster: clusterConfig } = this.config;
 
     const cluster: Cluster = new Cluster(clusterConfig, this.cmd);
 
     await cluster.authorize();
 
     await cluster.apply(kustomize);
+
+    if (force) {
+      await cluster.force();
+    }
   }
 }
 
