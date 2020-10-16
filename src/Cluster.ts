@@ -25,8 +25,7 @@ class Cluster {
     await this.cmd.run([
       "kubectl",
       "apply",
-      `-kustomize=${path}`,
-      "--recursive",
+      `--kustomize=${path}`,
       "--record",
     ]);
   }
