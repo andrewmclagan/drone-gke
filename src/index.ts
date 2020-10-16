@@ -3,29 +3,16 @@ import Env from "./Env.ts";
 import Cmd from "./Cmd.ts";
 import Plugin from "./Plugin.ts";
 
-let glob = Env.get(["GKE_GLOB", "PLUGIN_GLOB"]);
-let repository = Env.get(["GKE_REPOSITORY", "PLUGIN_REPOSITORY"]);
+let kustomize = Env.get(["GKE_KUSTOMIZE", "PLUGIN_KUSTOMIZE"]);
 let cluster = Env.get(["GKE_CLUSTER", "PLUGIN_CLUSTER"]);
 let serviceKey = Env.get(["GKE_SERVICE_KEY", "PLUGIN_SERVICE_KEY"]);
 
 let config = {
-  glob,
-  repository: undefined,
+  kustomize,
   cluster: {
     ...cluster,
     service_key: jsonParse(base64Decode(serviceKey)),
   },
 };
-
-if (repository) {
-  config.repository = {
-    ...repository,
-    netrc: {
-      machine: Env.get("DRONE_NETRC_MACHINE"),
-      login: Env.get("DRONE_NETRC_USERNAME"),
-      password: Env.get("DRONE_NETRC_PASSWORD"),
-    },
-  };
-}
 
 new Plugin(config, new Cmd()).run();
