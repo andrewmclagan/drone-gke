@@ -54,7 +54,7 @@ class Cluster {
       "clusters",
       "get-credentials",
       this.config.name,
-      `--zone=${this.config.zone}`,
+      `--region=${this.config.region}`,
     ]);
   }
 

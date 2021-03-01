@@ -7,6 +7,6 @@ export interface Config {
 export interface ClusterConfig {
   service_key: object;
   name: string;
-  zone: string;
+  region: string;
   namespace?: string;
 }
