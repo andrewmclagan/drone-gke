@@ -20,6 +20,11 @@ class Env {
     return value || fallback;
   }
 
+  static getArray(key: string | string[], fallback: string = ""): string[] {
+    const raw = Env.get(key);
+    return raw.split(',');
+  }  
+
   static toObject(): any {
     let values: any = {};
     let env: any = Deno.env.toObject();

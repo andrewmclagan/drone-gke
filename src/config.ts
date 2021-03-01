@@ -1,5 +1,5 @@
 export interface Config {
-  kustomize: string;
+  commands: string[];
   force: boolean;
   cluster: ClusterConfig;
 }

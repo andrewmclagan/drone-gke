@@ -21,9 +21,14 @@ class Cluster {
     }
   }
 
-  async apply(path: string): Promise<void> {
-    await this.cmd.run(["kubectl", "apply", `--kustomize=${path}`, "--record"]);
-  }
+  async command(cmd: string): Promise<void> {
+    const parts = cmd.split(' ');
+    await this.cmd.run(["kubectl", ...parts]);
+  }  
+
+  // async apply(path: string): Promise<void> {
+  //   await this.cmd.run(["kubectl", "apply", `--kustomize=${path}`, "--record"]);
+  // }
 
   async force(): Promise<void> {
     await this.cmd.run(["kubectl", "rollout", "restart", "deployments"]);
